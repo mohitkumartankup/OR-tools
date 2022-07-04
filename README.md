@@ -4,7 +4,7 @@ You can look google or tools example - https://developers.google.com/optimizatio
 
 Colab cell link for same code - https://colab.research.google.com/drive/1C005DZ1yMqupbntoIkfdudcbGH3ff1Of?usp=sharing
 
-###run the above function by installing python dependency of google or-tool
+### To installing python dependency of google or-tool 
 ```
  !pip install ortools
 ```
