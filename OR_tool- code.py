@@ -1,8 +1,7 @@
 """Install OR-Tools for Python"""
 !pip install ortools
 
-##############
-.
+##############.
 ###########
 
 """Vehicle Routing Problem (CVRP). with add of time_window, capacity constraint 
@@ -92,6 +91,8 @@ def create_data_model(depot,original_addresses,original_time_windows, original_d
     data['vehicle_capacity'] = max_capacity
 
     data['vehicle_max_distance'] = 3000000   #an assumption
+
+    data['service_time'] = 1200 #service time at every station
 
     data['dummy_depot'] = len(original_addresses)       #last dummy depot, for no of fuel points needed
     return data
@@ -285,6 +286,11 @@ def add_capacity_constraints(routing, manager, data, demand_evaluator_index):
 
 def create_time_evaluator(data):
     """Creates callback to get total times between locations."""
+
+    """Gets the service time for the specified location."""
+    def service_time(data):
+      return abs(data['service_time'])
+
     def travel_time(data, from_node, to_node):
         """Gets the travel times between two locations."""
         if from_node == to_node:
@@ -301,8 +307,10 @@ def create_time_evaluator(data):
             if from_node == to_node:
                 _total_time[from_node][to_node] = 0
             else:
-                _total_time[from_node][to_node] = int( travel_time(
-                        data, from_node, to_node))
+                _total_time[from_node][to_node] = int(  
+                                          service_time(data) +
+                                          travel_time(data, from_node, to_node)
+                                          )
 
     def time_evaluator(manager, from_node, to_node):
         """Returns the total time between the two nodes"""
@@ -458,7 +466,7 @@ def remove_space(string):
 def main():
     """Input Data"""
     "getting data from uploaded csv file"
-    uploaded_data = pd.read_csv('/content/raw_data.csv')
+    uploaded_data = pd.read_csv('/content/raw_data - raw_data.csv')
     depot = uploaded_data['depot address'][0]
     original_addresses = uploaded_data['addresses']
 
@@ -471,7 +479,7 @@ def main():
       pair = (int(start_time[i])*3600 - 9*3600, int(end_time[i])*3600-9*3600)
       original_time_windows.append(pair)
 
-    print(original_time_windows)
+    # print(original_time_windows)
     original_demands = []
     for i in  uploaded_data['demands(l)']:
       original_demands.append(int(i))
