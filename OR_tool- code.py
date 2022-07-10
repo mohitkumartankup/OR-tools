@@ -1,6 +1,8 @@
 """Install OR-Tools for Python"""
 !pip install ortools
 
+"""Install OR-Tools for Python"""
+
 ##############.
 ###########
 
@@ -468,7 +470,16 @@ def main():
     "getting data from uploaded csv file"
     uploaded_data = pd.read_csv('/content/raw_data - raw_data.csv')
     depot = uploaded_data['depot address'][0]
-    original_addresses = uploaded_data['addresses']
+     
+    original_addresses = []
+    for i in range(len(uploaded_data['latitude'])) :
+      lat = uploaded_data['latitude'][i]
+      lon = uploaded_data['longitude'][i]
+      json_str = "https://maps.googleapis.com/maps/api/geocode/json?latlng=" + str(lat) + "," + str(lon) + "&key=AIzaSyAp2TQMHUCnY6B4vKDM11qP1xYxDGrVg1Y"
+      jsonResult = url.urlopen(json_str).read()
+      response = json.loads(jsonResult)
+      temp = response["plus_code"]["compound_code"]
+      original_addresses.append(temp)
 
     start_time = uploaded_data['time windows start (hours)']
     end_time = uploaded_data['time windows end (hours)']
